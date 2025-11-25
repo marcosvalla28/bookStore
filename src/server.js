@@ -3,6 +3,10 @@ require("dotenv").config();
 const morgan = require("morgan");
 //IMPORTAR LAS RUTAS
 const productRoutes = require("./routes/productRoutes");
+const useRoutes = require("./routes/useRoutes");
+const favoritesRoutes = require("./routes/favoritesRoutes");
+const cartRoutes = require("./routes/cartRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 
 
@@ -15,6 +19,10 @@ app.use(express.urlencoded({extended: true}))//PARA QUE EL SERVIDOR PUEDA ENTEND
 
 //ROUTES
 app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", useRoutes);
+app.use("/api/v1/favorites", favoritesRoutes);
+app.use("/api/v1/cart", cartRoutes);
 
 //PUERTOS
 const port = process.env.PORT || 3000;
