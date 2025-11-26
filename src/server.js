@@ -1,12 +1,14 @@
 const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
-//IMPORTAR LAS RUTAS
-const productRoutes = require("./routes/productRoutes");
-const useRoutes = require("./routes/useRoutes");
-const favoritesRoutes = require("./routes/favoritesRoutes");
-const cartRoutes = require("./routes/cartRoutes");
-const authRoutes = require("./routes/authRoutes");
+
+//LOS ARCHIVOS DE LOS ENRUTADORES
+//IMPORTAR LOS ENRUTADORES
+const productRoutes = require("./routes/product.routes");
+const userRoutes = require("./routes/user.routes");
+const favoritesRoutes = require("./routes/favorites.routes");
+const cartRoutes = require("./routes/cart.routes");
+const authRoutes = require("./routes/auth.routes");
 
 
 
@@ -17,11 +19,11 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))//PARA QUE EL SERVIDOR PUEDA ENTENDER LOS DATOS QUE VIENEN DE UN FORMULARIO
 
 
-//ROUTES
+// UTILIZO A LOS ENRUTADORES
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/users", useRoutes);
-app.use("/api/v1/favorites", favoritesRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/favs", favoritesRoutes);
 app.use("/api/v1/cart", cartRoutes);
 
 //PUERTOS
