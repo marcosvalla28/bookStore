@@ -6,10 +6,9 @@ const router = express.Router();
 
 //LLEGO CON /AUTH - ESTA ES LA RUTA RAIZ DE ESTE ENRUTADOR
 //endpoints
-
-router.get("/users", getAllUsers);
 router.post("/register", register);
+router.get("/users", getAllUsers);
 router.post("/login", login);
-router.delete("/user/:id", deleteUsers) //RUTA PARAMETRIZAEDA PARA BORRAR USUARIOS
+/* router.delete("/user/:id", deleteUsers)  *///RUTA PARAMETRIZAEDA PARA BORRAR USUARIOS
 
 module.exports = router;

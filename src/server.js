@@ -9,10 +9,17 @@ const userRoutes = require("./routes/user.routes");
 const favoritesRoutes = require("./routes/favorites.routes");
 const cartRoutes = require("./routes/cart.routes");
 const authRoutes = require("./routes/auth.routes");
+const connectDB = require("./config/database");
 
 
 
 const app = express();
+
+//CONEXION A LA BASE DE DATO
+connectDB();
+
+
+
 //MIDDLEWARES
 app.use(morgan("dev"));
 app.use(express.json())
