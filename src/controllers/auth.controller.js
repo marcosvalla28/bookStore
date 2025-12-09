@@ -133,36 +133,48 @@ const login = async (req, res) =>{
 
 const deleteUsers = async (req, res) => {
     try {
-        const {id} = req.params.id;
+        const {id} = req.params;
 
-        const idUser = await User.findById({_id});
+        const idUser = await User.findById(id);
 
-        if (id !== idUser) {
+        if (!idUser) {
             return res.status(400).json({
                 ok: false,
                 message: 'No se encontro ningun usuario con ese id :('
             })
         }
 
+        await User.findByIdAndDelete(id);
 
-
-
+        return res.status(200).json({
+            ok: true,
+            message: 'Usuario encontrado y borrado exitosamente',
+            user:{
+                id: idUser._id,
+                name: idUser.name,
+                email: idUser.email,
+                role: idUser.role
+            }
+        })
 
 
     } catch (error) {
         console.error(error)
         return res.status(500).json({
             ok: false,
-            msg: 'Hable con el administrador'
+            msg: 'Error al eliminar usuario, hable con el administrador'
         })
     }
 }
 
-
+const cambioDeRol = async (req, res) => {
+    
+}
 
 
 module.exports = {
     register,
     login,
-    getAllUsers
+    getAllUsers,
+    deleteUsers
 };

@@ -9,6 +9,6 @@ const router = express.Router();
 router.post("/register", register);
 router.get("/users", getAllUsers);
 router.post("/login", login);
-/* router.delete("/user/:id", deleteUsers) */ //RUTA PARAMETRIZAEDA PARA BORRAR USUARIOS
+router.delete("/user/:id", deleteUsers) //RUTA PARAMETRIZAEDA PARA BORRAR USUARIOS
 
 module.exports = router;
