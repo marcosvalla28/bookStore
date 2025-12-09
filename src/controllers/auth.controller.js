@@ -148,7 +148,7 @@ const deleteUsers = async (req, res) => {
 
         return res.status(200).json({
             ok: true,
-            message: 'Usuario encontrado y borrado exitosamente',
+            message: 'Usuario encontrado y eliminado exitosamente',
             user:{
                 id: idUser._id,
                 name: idUser.name,
@@ -182,7 +182,7 @@ const userRol = async (req, res) => {
     const user = await User.findById(id).select('-password');
 
     if (!user) {
-        return res.estatu(400).json({
+        return res.estatu(404).json({
             ok: false,
             message: 'Usuario no encontrado'
         })
