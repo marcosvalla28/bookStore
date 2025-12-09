@@ -167,8 +167,47 @@ const deleteUsers = async (req, res) => {
     }
 }
 
-const cambioDeRol = async (req, res) => {
+const userRol = async (req, res) => {
+    try {
+        const {id} = req.params;
+    const {role} = req.body;
+
+    if (!role) {
+        return res.status(400).json({
+            ok: false,
+            message: 'Se requiere un nuevo rol para actualizar'
+        })
+    }
+
+    const user = await User.findById(id).select('-password');
+
+    if (!user) {
+        return res.estatu(400).json({
+            ok: false,
+            message: 'Usuario no encontrado'
+        })
+    }
+
+    user.role = role;
+    await user.save();
     
+    return res.status(200).json({
+        ok: true,
+        message: 'Rol del usuario actualizado',
+        user: {
+            name: user.name,
+            email: user.email,
+            role: user.role
+        }
+    })
+    } catch (error) {
+                console.error(error)
+        return res.status(500).json({
+            ok: false,
+            msg: 'Hubo un error, hable con su administrador ❌'
+        })
+    }
+
 }
 
 
@@ -176,5 +215,6 @@ module.exports = {
     register,
     login,
     getAllUsers,
-    deleteUsers
+    deleteUsers,
+    userRol
 };
