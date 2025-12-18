@@ -41,23 +41,23 @@ const register = async (req, res) =>{
         
         const {name, email, password} = req.body;
 
-        //VALIDAMOS QUE LLEGUE LA INFO BASICA
+       /*  //VALIDAMOS QUE LLEGUE LA INFO BASICA  //ESTO VIENE A SER LO MISMO QUE ISeMPTY
         if (!name || !email || !password) {
             return res.status(400).json({
                 ok: false,
                 msg: 'Todos los campos son obligatorios 😡'
             })
-        }
+        } */
 
-        //VALIDO QUE EL EMAIL NO ESTE EN USO
-        const exist = await User.findOne({email});
+        /* //VALIDO QUE EL EMAIL NO ESTE EN USO
+        const exist = await User.findOne({email});  //ESTO LO HACEMOS EN AUTH.VALIDATOR.JS
 
         if (exist) {
             return res.status(409).json({
                 ok: false,
                 message: 'El ususario ya existe'
             })
-        }
+        } */
 
         //CREAR EL USUSARIO CON MONGOOSE
         const newUser = await User.create({
@@ -87,28 +87,27 @@ const register = async (req, res) =>{
 
 }
 
-
 const login = async (req, res) =>{
     try {
         
         const {email, password} = req.body;
 
-        //VALIDAMOS QUE LLEGUE LA INFO BASICA
+        /* //VALIDAMOS QUE LLEGUE LA INFO BASICA
         if (!email || !password) {
             return res.status(400).json({
                 ok: false,
                 msg: 'Todos los campos son obligatorios 😡'
             })
-        }
+        } */
 
         const user = await User.findOne({email, password})
 
-        if (!user) {
+        /* if (!user) {
             return res.status(401).json({
                 ok: false,
                 msg: 'Credenciales incorrectas 😡'
             })
-        }
+        } */
 
         return res.status(200).json({
             ok: true,
@@ -135,16 +134,14 @@ const deleteUsers = async (req, res) => {
     try {
         const {id} = req.params;
 
-        const idUser = await User.findById(id);
+        const idUser = await User.findByIdAndDelete(id).select('_password');
 
-        if (!idUser) {
-            return res.status(400).json({
+        /* if (!idUser) {
+            return res.status(404).json({
                 ok: false,
                 message: 'No se encontro ningun usuario con ese id :('
             })
-        }
-
-        await User.findByIdAndDelete(id);
+        } */
 
         return res.status(200).json({
             ok: true,
@@ -169,7 +166,7 @@ const deleteUsers = async (req, res) => {
 
 const userRol = async (req, res) => {
     try {
-        const {id} = req.params;
+    const {id} = req.params;
     const {role} = req.body;
 
     if (!role) {
@@ -179,9 +176,47 @@ const userRol = async (req, res) => {
         })
     }
 
-    const user = await User.findById(id).select('-password');
+    //VALIDAMOS QUE EL ROL SEA CORRECTO
+    const allowRoles = ['user', 'admin', 'superadmin'];
 
-    if (!user) {
+
+    if(!allowRoles.includes(role)){
+        return res.status(400).json({
+            ok: false,
+            message: `El rol debe ser uno de los siguientes: ${allowRoles.join(', ')}`
+        })
+    }
+
+    //BUSCAR Y ACTUALIZAR EL USUARIO 
+    const updateUser = await User.findByIdAndDelete(
+        id,
+        {role},
+        {new: true, runValidators: true}
+    ).select('-password');
+
+    if (!updateUser) {
+        return res.status(404).json({
+            ok: false,
+            message: `Usuario no encontrado`
+        })
+    }
+
+    return res.status(200).json({
+        ok: true,
+        message: 'Rol actualizado correctamente',
+        user: {
+            id: updateUser._id,
+            name: updateUser.name,
+            email: updateUser.email,
+            role: updateUser.role
+        }
+    })
+
+
+
+    /* const user = await User.findById(id).select('-password'); */
+
+    /* if (!user) {
         return res.estatu(404).json({
             ok: false,
             message: 'Usuario no encontrado'
@@ -199,7 +234,7 @@ const userRol = async (req, res) => {
             email: user.email,
             role: user.role
         }
-    })
+    }) */
     } catch (error) {
                 console.error(error)
         return res.status(500).json({

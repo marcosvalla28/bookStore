@@ -14,7 +14,7 @@ const handleValidationErrors = (req, res, next) => {
         })
     }
 
-    next()
+    next();
 }
 
 
@@ -31,7 +31,7 @@ const validateRegister = [
     .isEmail().withMessage('El email no tiene un formato valido')
     .normalizeEmail()
     .custom(async (email) =>{
-        const user = UserActivation.findOne({email})
+        const user = await User.findOne({email})
         if (user) {
             throw new Error('El usuario ya existe')
         }
@@ -44,6 +44,49 @@ const validateRegister = [
     handleValidationErrors
 ]
 
+const validateLogin = [
+    body('email')
+    .notEmpty().withMessage('El email es requerido')
+    .isEmail().withMessage('El email ingresado debe ser valido')
+    .normalizeEmail()
+    .custom(async(email) => {
+        const user = await User.findOne({email})
+        if (!user) {
+            throw new Error('Credencial incorrecta')
+        }
+    }),
+
+    body('password')
+    .notEmpty().withMessage('La contrasena es requerida')
+    .isLength({min: 6}).withMessage('La contrasena debe tener al menos 6 caracteres')
+    .custom(async (password) => {
+        const user = await User.findOne({password});
+        if (!user) {
+            throw new Error('Credencial incorrecta');
+        }
+    }),
+
+
+    
+    handleValidationErrors
+]
+
+const validateUserId = [
+        param('id')
+        .isMongoId().withMessage('El ID proporcionado no es valido')
+        .custom(async (id) => {
+            const user = await User.findById(id);
+            if (!user) {
+                throw new Error('El usuario no existe o no fue encontrado')
+            }
+        }),
+
+
+    handleValidationErrors
+    ]
+
 module.exports = {
-    validateRegister
+    validateRegister,
+    validateLogin,
+    validateUserId
 }
