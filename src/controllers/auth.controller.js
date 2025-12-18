@@ -169,14 +169,14 @@ const userRol = async (req, res) => {
     const {id} = req.params;
     const {role} = req.body;
 
-    if (!role) {
+/*     if (!role) {
         return res.status(400).json({
             ok: false,
             message: 'Se requiere un nuevo rol para actualizar'
         })
-    }
+    } */
 
-    //VALIDAMOS QUE EL ROL SEA CORRECTO
+/*     //VALIDAMOS QUE EL ROL SEA CORRECTO
     const allowRoles = ['user', 'admin', 'superadmin'];
 
 
@@ -185,21 +185,21 @@ const userRol = async (req, res) => {
             ok: false,
             message: `El rol debe ser uno de los siguientes: ${allowRoles.join(', ')}`
         })
-    }
+    } */
 
     //BUSCAR Y ACTUALIZAR EL USUARIO 
-    const updateUser = await User.findByIdAndDelete(
+    const updateUser = await User.findByIdAndUpdate(
         id,
         {role},
         {new: true, runValidators: true}
     ).select('-password');
 
-    if (!updateUser) {
+    /* if (!updateUser) {
         return res.status(404).json({
             ok: false,
             message: `Usuario no encontrado`
         })
-    }
+    } */
 
     return res.status(200).json({
         ok: true,

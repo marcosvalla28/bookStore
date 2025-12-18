@@ -1,6 +1,6 @@
 const {body, param, validationResult} = require('express-validator');
 const User = require('../models/User');
-
+const ROLE_SUPERADMIN = 'superadmin'
 
 //middleware para manejar los errores de validacion
 const handleValidationErrors = (req, res, next) => {
@@ -44,6 +44,8 @@ const validateRegister = [
     handleValidationErrors
 ]
 
+
+//VALIDACION PARA LOGIN
 const validateLogin = [
     body('email')
     .notEmpty().withMessage('El email es requerido')
@@ -71,6 +73,7 @@ const validateLogin = [
     handleValidationErrors
 ]
 
+//VALIDACION PARA DELETE
 const validateUserId = [
         param('id')
         .isMongoId().withMessage('El ID proporcionado no es valido')
@@ -85,8 +88,36 @@ const validateUserId = [
     handleValidationErrors
     ]
 
+//VALIDACION PARA CAMBIO DE ROL
+const validateUpdateRole = [
+    param('id')
+    .isMongoId().withMessage('El ID proporcionado no es valido'),
+
+    body('role')
+    .notEmpty().withMessage('Debe proporcionar el rol del usuario')
+    .isIn(['user', 'admin', 'superadmin']).withMessage('El rol debe ser: user, admin o superadmin'),
+
+    handleValidationErrors
+
+]
+
+//VALIDAMOS SI EL USUARIO QUE PIDE ALLUSERS SEA SUPER ADMIN
+const validateSuperAdmin = [
+    param('id')
+    .isMongoId().withMessage('El ID proporcionado no es valido')
+    .custom(async (id) => {
+        const user = await User.findById(id);
+        if (user.role !== ROLE_SUPERADMIN) {
+            throw new Error('El usuario no tiene permiso para esta accion')
+        }
+    }),
+    
+    handleValidationErrors
+]
 module.exports = {
     validateRegister,
     validateLogin,
-    validateUserId
+    validateUserId,
+    validateUpdateRole,
+    validateSuperAdmin
 }
