@@ -35,7 +35,7 @@ const getAllUsers = async (req, res) => {
     }
 }
 
-const register = async (req, res) =>{
+const register = async (req, res, next) =>{
 
     try {
         
@@ -80,11 +80,7 @@ const register = async (req, res) =>{
         })
 
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-            ok: false,
-            message: error.message
-        })
+        next(error)
     }
 
 }

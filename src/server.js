@@ -11,6 +11,7 @@ const favoritesRoutes = require("./routes/favorites.routes");
 const cartRoutes = require("./routes/cart.routes");
 const authRoutes = require("./routes/auth.routes");
 const connectDB = require("./config/database");
+const errorHandler = require("./middlewares/errorHandler");
 
 
 
@@ -36,6 +37,10 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/favs", favoritesRoutes);
 app.use("/api/v1/cart", cartRoutes);
+
+
+//ACA LLAMO AL MIDDELWARE MANEJADOR DE ERRORES 
+app.use(errorHandler)
 
 //PUERTOS
 const port = process.env.PORT || 3000;
