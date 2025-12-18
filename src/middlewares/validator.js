@@ -18,6 +18,27 @@ const handleValidationErrors = (req, res, next) => {
     next();
 }
 
+const handleValidationErrorsWithFiles = (req, res, next) => {
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        //SI HAY ERRORES Y SE SUBIO A ARCHIVOS NECESITO ELIMINARLOS
+        if (req.file) {
+            deleteOneFile(req.file.path)
+        }
+
+        return res.status(400).json({
+            ok: false,
+            message: 'Errores de validacion',
+            errors: errors.mapped()
+        })
+    }
+
+    next()
+
+}
+
 
 //VALIDACIONES PARA EL REGISTRO DE UN USUARIO
 const validateRegister = [
@@ -40,9 +61,9 @@ const validateRegister = [
     const user = await User.findOne({ email });
     if (user) {
        //y si ademas ese usuario tiene una foto de perfil cargada
-    if(req.file){
-        deleteOneFile(req.file.path)
-    }
+    /* if(req.file){
+        deleteOneFile(req.file.path) //YA LO ESTAMOS VALIDANDO EN EL HANDLE
+    } */
         throw new Error("El usuario ya existe");
     }
     }),
@@ -52,9 +73,8 @@ const validateRegister = [
     .isLength({ min: 6 })
     .withMessage("la contraseña debe tener por lo menos 6 caracteres"),
 
-    handleValidationErrors
+    handleValidationErrorsWithFiles
 ];
-
 
 //VALIDACION PARA LOGIN
 const validateLogin = [
@@ -125,6 +145,9 @@ const validateSuperAdmin = [
     
     handleValidationErrors
 ]
+
+
+
 module.exports = {
     validateRegister,
     validateLogin,
