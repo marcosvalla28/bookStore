@@ -2,12 +2,13 @@
 const express = require("express");
 const { register, login, getAllUsers, deleteUsers, userRol } = require("../controllers/auth.controller");
 const { validateRegister, validateLogin, validateUserId, validateUpdateRole, validateSuperAdmin } = require("../middlewares/validator");
+const { uploadProfile } = require("../config/multer");
 
 const router = express.Router();
 
 //LLEGO CON /AUTH - ESTA ES LA RUTA RAIZ DE ESTE ENRUTADOR
 //endpoints
-router.post("/register", validateRegister, register);
+router.post("/register", uploadProfile , validateRegister, register);
 router.get("/users/:id", validateSuperAdmin, getAllUsers);
 router.post("/login", validateLogin, login);
 router.delete("/user/:id", validateUserId , deleteUsers) //RUTA PARAMETRIZAEDA PARA BORRAR USUARIOS
