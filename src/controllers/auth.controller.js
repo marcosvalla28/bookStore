@@ -39,7 +39,7 @@ const register = async (req, res, next) =>{
 
     try {
         
-        const {name, email, password} = req.body;
+        const {name, surname,email, password} = req.body;
 
        /*  //VALIDAMOS QUE LLEGUE LA INFO BASICA  //ESTO VIENE A SER LO MISMO QUE ISeMPTY
         if (!name || !email || !password) {
@@ -62,6 +62,7 @@ const register = async (req, res, next) =>{
         //CREAR EL USUSARIO CON MONGOOSE
         const newUser = await User.create({
             name,
+            surname,
             email,
             password,
             profilePic: req.file ? req.file.filename : null
@@ -73,6 +74,7 @@ const register = async (req, res, next) =>{
             user:{
                 id: newUser._id,
                 name: newUser.name,
+                surname: newUser.surname,
                 email: newUser.email,
                 role: newUser.role,
                 photo: newUser.profilePic
