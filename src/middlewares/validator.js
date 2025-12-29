@@ -157,11 +157,25 @@ const validateSuperAdmin = [
 ]
 
 
+//VALIDACIONES PARA EL CODIGO DE VERIFICACION DEL EMAIL
+const validateVerifyEmail = [
+    body('email')
+    .isEmail().withMessage('Email invalido')
+    .normalizeEmail(),
+
+    body('code')
+    .isLength({min:6, max:6}).withMessage('El codigo debe tener 6 digitos')
+    .isNumeric().withMessage('El codigo debe ser numerico'),
+
+    handleValidationErrors
+]
+
 
 module.exports = {
     validateRegister,
     validateLogin,
     validateUserId,
     validateUpdateRole,
-    validateSuperAdmin
+    validateSuperAdmin,
+    validateVerifyEmail
 }
