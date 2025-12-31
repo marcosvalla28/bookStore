@@ -1,6 +1,14 @@
 //MINI CRUD DE USUARIO - AUTH
 const User = require("../models/User");
-const { sendVerificationEmail } = require('../utils/emailService')
+const { sendVerificationEmail } = require('../utils/emailService');
+const jwt = require('jsonwebtoken');
+
+//FUNCION AUXILIAR PARA PODER GENERAR EL TOKEN
+const generateToken = (id) => {
+    return jwt.sign({id}, process.env.JWT_SECRET,{
+        expiresIn: '1h'
+    });
+}
 
 
 
@@ -40,7 +48,7 @@ const register = async (req, res, next) =>{
 
     try {
         
-        const {name, surname,email, password} = req.body;
+        const {name, surname, email, password} = req.body;
 
        /*  //VALIDAMOS QUE LLEGUE LA INFO BASICA  //ESTO VIENE A SER LO MISMO QUE ISeMPTY
         if (!name || !email || !password) {
@@ -111,7 +119,50 @@ const register = async (req, res, next) =>{
 
 }
 
-const verifyEmail = async (req, res, next) => {}
+const verifyEmail = async (req, res, next) => {
+    try {
+        const {email, code} = req.body;
+
+        //SI EL EMAIL YA ESTA VERIFICADO
+        const user = await User.findOne({email});
+
+        if (user.verifiedEmail) {
+            return res.status(400).json({
+                success: false,
+                message:'El email ya esta verificado'
+            })
+        }
+
+        //VERIFICAMOS EL CODIGO Y SU EXPIRACION 
+        if (user.verificationCode !== code) {
+            return res.status(400).json({
+                success: false,
+                message:'Codigo de verificacion incorrecto'
+            })
+        }
+
+        if (new Date() > user.codeExpiration) {
+            return res.status(400).json({
+                success: false,
+                message:'El codigo de verificacion expiro'
+            })
+        }
+
+        //MARCAR EL EMAIL DEL USUARIO COMO VERIFICADO
+        user.verifiedEmail = true;
+        user.verificationCode = null;
+        user.codeExpiration = null;
+        await user.save(); //ME SIENTO EN LA HOGUERA PARA SALVAR EL PUNTO
+
+        return res.status(200).json({
+            success: true,
+            message: 'Email verificado exitosamente. Ahora podes iniciar sesion'
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
 
 const login = async (req, res) =>{
     try {
@@ -126,7 +177,7 @@ const login = async (req, res) =>{
             })
         } */
 
-        const user = await User.findOne({email, password})
+        const user = await User.findOne({email})
 
         /* if (!user) {
             return res.status(401).json({

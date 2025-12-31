@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
 const path = require('path')
+const cookieParser = require("cookie-parser");
 
 //LOS ARCHIVOS DE LOS ENRUTADORES
 //IMPORTAR LOS ENRUTADORES
@@ -24,7 +25,8 @@ connectDB();
 
 //MIDDLEWARES
 app.use(morgan("dev"));
-app.use(express.json())
+app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended: true}))//PARA QUE EL SERVIDOR PUEDA ENTENDER LOS DATOS QUE VIENEN DE UN FORMULARIO
 
 
