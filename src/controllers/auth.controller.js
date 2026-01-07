@@ -12,37 +12,7 @@ const generateToken = (id) => {
 
 
 
-const getAllUsers = async (req, res) => {
-    try {
-        
-        const users = await User.find().select('-password');
 
-        //VALIDAMOS QUE EXISTAN USUARIOS PARA ENVIAR AL FRONT
-        if (users.length === 0) {
-            return res.status(404).jsosn({
-                ok: false,
-                msg: 'No se encontraron ususarios en la base de datos'
-            })
-        }
-
-        return res.status(200).json({
-            ok: true,
-            message: 'Usuarios obtenidos correctamente',
-            data: {
-                length: users.length,
-                users
-            }
-        })
-
-
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-            ok: false,
-            msg: 'Hable con el administrador'
-        })
-    }
-}
 
 const register = async (req, res, next) =>{
 
@@ -186,10 +156,43 @@ const login = async (req, res) =>{
             })
         } */
 
+        //VERIFICAR LA PASSWORD
+        const validPassword = await user.comparePasswords(password);
+        if (!validPassword) {
+            return res.status(401).json({
+                ok: false,
+                message: 'Credenciales invalidas ❌'
+            })
+        }
+
+        //VERIFICAR QUE EL EMAIL DEL USUARIO ESTE VERIFICADO
+        if (!user.verifiedEmail) {
+            return res.status(403).json({
+                ok: false,
+                message: 'Debes verificar tu email para iniciar sesion 💻'
+            })
+        }
+
+        //TRABAJAR CON EL TOKEN Y LA COOKIE
+        //GENERAR TOKEN
+        const token = generateToken(user._id);
+
+        //ENVIAR/RESPONDER UNA COOKIE CON EL TOKEN
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 1000, //1HS
+            secure: true,
+        })
+
+
+
+
         return res.status(200).json({
             ok: true,
             message: 'Login Exitoso!!',
-            user:{
+            token,
+            data:{
                 id: user._id,
                 name: user.name,
                 email: user.email,
@@ -207,6 +210,53 @@ const login = async (req, res) =>{
     }
 }
 
+const logout = async (req, res) => {
+    try {
+        res.clearCookie('token');
+        return res.status(200).json({
+            ok: true,
+            message: 'Logout exitoso!!'
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
+
+
+const getAllUsers = async (req, res) => {
+    try {
+        
+        const users = await User.find().select('-password');
+
+        //VALIDAMOS QUE EXISTAN USUARIOS PARA ENVIAR AL FRONT
+        if (users.length === 0) {
+            return res.status(404).jsosn({
+                ok: false,
+                msg: 'No se encontraron ususarios en la base de datos'
+            })
+        }
+
+        return res.status(200).json({
+            ok: true,
+            message: 'Usuarios obtenidos correctamente',
+            data: {
+                length: users.length,
+                users
+            }
+        })
+
+
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+}
 
 const deleteUsers = async (req, res) => {
     try {
@@ -330,5 +380,6 @@ module.exports = {
     getAllUsers,
     deleteUsers,
     userRol,
-    verifyEmail
+    verifyEmail,
+    logout
 };
