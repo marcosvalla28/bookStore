@@ -134,7 +134,7 @@ const verifyEmail = async (req, res, next) => {
     }
 }
 
-const login = async (req, res) =>{
+const login = async (req, res, next) =>{
     try {
         
         const {email, password} = req.body;
@@ -222,7 +222,60 @@ const logout = async (req, res) => {
     }
 }
 
+const getUserProfile = async (req,res, next) => {
+    try {
+        
+     const user = await User.findById(req.user._id)
+     .select('-password -verificationCode -codeExpiration')
+     ;
+     
+     return res.status(200).json({
+        ok: true,
+        message: "Perfil del usuario obtenido correctamente",
+        data: user
+     })
+    } catch (error) {
+        next(error)
+    }
+}
 
+const updateProfilePhoto = async (req,res, next) => {
+    try {
+
+        // validamos que el usuario suba una foto
+        if(!req.file){
+            return res.status(400).json({
+                ok:false,
+                message:"no se proporcionó ninguna imagen"
+            })
+        }
+
+        const user = await User.findById(req.user._id)
+        .select('-password -verificationCode -codeExpiration')
+        ;
+
+        // Eliminar la foto anterior si es que existe
+        if(user.profilePic){
+            const path = require('path');
+            const previousPhoto = path.join(__dirname, '../../uploads/profiles',user.profilePic)
+            deleteOneFile(previousPhoto)
+        }
+
+        // Actualizar con la nueva foto que envie el usuario
+        user.profilePic = req.file.filename;
+        await user.save()
+
+        //enviamos la respuesta
+        return res.status(201).json({
+            ok:true,
+            message:"foto de perfil actualizada 😊",
+            data: user.profilePic
+        })
+        
+    } catch (error) {
+        next(error)
+    }
+}
 
 
 
@@ -381,5 +434,7 @@ module.exports = {
     deleteUsers,
     userRol,
     verifyEmail,
-    logout
+    logout,
+    getUserProfile,
+    updateProfilePhoto
 };
