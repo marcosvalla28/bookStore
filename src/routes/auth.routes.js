@@ -3,6 +3,7 @@ const express = require("express");
 const { register, login, getAllUsers, deleteUsers, userRol, verifyEmail, logout } = require("../controllers/auth.controller");
 const { validateRegister, validateLogin, validateUserId, validateUpdateRole, validateSuperAdmin, validateVerifyEmail } = require("../middlewares/validator");
 const { uploadProfile } = require("../config/multer");
+const { verifyAuth } = require("../middlewares/auth");
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.post("/login", validateLogin, login);
 
 
 //ENDPOINTS PRIVADOS
-router.post("/logout", logout)
+router.post("/logout", verifyAuth,logout)
 router.get("/users/:id", validateSuperAdmin, getAllUsers);
 router.delete("/user/:id", validateUserId , deleteUsers) //RUTA PARAMETRIZAEDA PARA BORRAR USUARIOS
 router.patch("/role/:id", validateUserId, validateUpdateRole, userRol) //ruta parametrizda para actualizar el rol del usuario
