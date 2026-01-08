@@ -13,6 +13,7 @@ const cartRoutes = require("./routes/cart.routes");
 const authRoutes = require("./routes/auth.routes");
 const connectDB = require("./config/database");
 const errorHandler = require("./middlewares/errorHandler");
+const createSuperAdmin = require("./utils/createSuperAdmin");
 
 
 
@@ -20,6 +21,9 @@ const app = express();
 
 //CONEXION A LA BASE DE DATO
 connectDB();
+
+//LLAMO A LA FUNCION QUE CREA AL SUPERADMIN
+createSuperAdmin()
 
 
 
