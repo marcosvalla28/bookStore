@@ -41,6 +41,32 @@ const verifyAuth = async (req, resizeBy, next) => {
     }
 }
 
+//VERIFICAR SI EL USUARIO ES ADMIN O SUPERADMIN
+const verifyAdmin = (req, res, next) => {
+    if (req.user.role !== process.env.ADMIN_ROLE && req.user.role !== process.env.SUPER_ADMIN_ROLE) {
+        return res.status(403).json({
+            ok: false,
+            message: 'Acceso denegado. Se requiere permiso de administrador'
+        })
+    }
+    next()
+}
+
+//VERIFICAR SI EL USUARIO ES SUPERADMIN
+const verifySuperAdmin = (req, res, next) => {
+    if (req.user.role !== process.env.SUPER_ADMIN_ROLE) {
+        return res.status(403).json({
+            ok: false,
+            message: 'Acceso denegado. Se requiere permisos de super administrador'
+        })
+    }
+
+    next()
+}
+
+
 module.exports = {
-    verifyAuth
+    verifyAuth,
+    verifyAdmin,
+    verifySuperAdmin
 }

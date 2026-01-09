@@ -170,6 +170,14 @@ const validateVerifyEmail = [
     handleValidationErrors
 ]
 
+//VALIDACION DE ID DE MONGO
+const validateMongoID = [
+    param('id')
+    .isMongoId().withMessage('El ID no es valido'),
+
+    handleValidationErrors
+]
+
 
 module.exports = {
     validateRegister,
@@ -177,5 +185,6 @@ module.exports = {
     validateUserId,
     validateUpdateRole,
     validateSuperAdmin,
-    validateVerifyEmail
+    validateVerifyEmail,
+    validateMongoID
 }
