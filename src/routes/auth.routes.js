@@ -20,9 +20,9 @@ router.post("/login", validateLogin, login);
 router.post("/logout", verifyAuth,logout)
 router.get("/profile",  verifyAuth, getUserProfile)
 router.put("/profile/photo", verifyAuth, uploadProfile, updateProfilePhoto)
-router.get("/users/:id", validateSuperAdmin, getAllUsers);
+/* router.get("/users/:id", validateSuperAdmin, getAllUsers);
 router.delete("/user/:id", validateUserId , deleteUsers) //RUTA PARAMETRIZAEDA PARA BORRAR USUARIOS
 router.patch("/role/:id", validateUserId, validateUpdateRole, userRol) //ruta parametrizda para actualizar el rol del usuario
-
+ */
 
 module.exports = router;

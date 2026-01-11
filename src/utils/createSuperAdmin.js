@@ -8,7 +8,7 @@ const createSuperAdmin = async () => {
         const existingSuperAdmin = await User.findOne({email:superAdminEmail});
 
         if (existingSuperAdmin) {
-            console.log('Super admin ya existe!')
+            console.log('✅ Super admin ya existe!')
             return
         }
 

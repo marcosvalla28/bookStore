@@ -2,6 +2,7 @@
 const User = require("../models/User");
 const { sendVerificationEmail } = require('../utils/emailService');
 const jwt = require('jsonwebtoken');
+const { deleteOneFile } = require('../utils/fileCleanup')
 
 //FUNCION AUXILIAR PARA PODER GENERAR EL TOKEN
 const generateToken = (id) => {

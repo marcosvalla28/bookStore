@@ -23,7 +23,7 @@ const app = express();
 connectDB();
 
 //LLAMO A LA FUNCION QUE CREA AL SUPERADMIN
-createSuperAdmin()
+createSuperAdmin();
 
 
 

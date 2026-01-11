@@ -1,6 +1,6 @@
 const User = require("../models/User");
-const { sendVerificationEmail } = require('../utils/emailService');
 const jwt = require('jsonwebtoken');
+const { deleteOneFile } = require('../utils/fileCleanup');
 
 
 
@@ -36,11 +36,31 @@ const getAllUsers = async (req, res) => {
     }
 }
 
+
+//GET USER BY ID
+
+
 const deleteUsers = async (req, res) => {
     try {
         const {id} = req.params;
+        
+
+        //PROTEGER AL SUPERADMIN DEL BORRADO!!!
+        if (condition) {
+            
+        }
+
+
+
+        //SI EXISTE UN ARCHIVO GUARDADO COMO FOTO DE PERFIL BORRARLA
+
+
+
+        //ELIMINO EL USUARIO
 
         const idUser = await User.findByIdAndDelete(id).select('_password');
+
+
 
         /* if (!idUser) {
             return res.status(404).json({
