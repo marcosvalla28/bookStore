@@ -64,10 +64,16 @@ const getUserByID = async(req, res, next) => {
 const deleteUsers = async (req, res) => {
     try {
         const {id} = req.params;
-        
+        const user = await User.findById(id).select('-password');
+        const superAdmin = process.env.SUPER_ADMIN_ROLE;
 
         //PROTEGER AL SUPERADMIN DEL BORRADO!!!
-        
+        if (user.role === superAdmin) {
+            return res.status(403).json({
+                ok:false,
+                message: 'Este usuario no es posible eliminar ⛔'
+            })
+        }
 
 
 
@@ -77,8 +83,9 @@ const deleteUsers = async (req, res) => {
 
         //ELIMINO EL USUARIO
 
-        const idUser = await User.findByIdAndDelete(id).select('_password');
 
+
+        await User.findByIdAndDelete(id);
 
 
         /* if (!idUser) {
@@ -92,10 +99,10 @@ const deleteUsers = async (req, res) => {
             ok: true,
             message: 'Usuario encontrado y eliminado exitosamente',
             user:{
-                id: idUser._id,
-                name: idUser.name,
-                email: idUser.email,
-                role: idUser.role
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
             }
         })
 
