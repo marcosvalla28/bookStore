@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require('../models/User');
 
 //VERIFICAR SI EL USUARIO ESTA AUTENTICADO
-const verifyAuth = async (req, resizeBy, next) => {
+const verifyAuth = async (req, res, next) => {
     try {
         //CAPTURAMOS EL TOKEN DESDE EL REQ
         const token = req.cookies.token;

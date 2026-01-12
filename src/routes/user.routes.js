@@ -1,8 +1,8 @@
 //ENRUTADOR PARA MANEJAR LOS ENDPOINTS DE USUARIOS
 const express = require("express");
 const { verifyAuth, verifySuperAdmin } = require("../middlewares/auth");
-const { getAllUsers, userRol, deleteUsers } = require("../controllers/user.controller");
-const { validateMongoID, validateUpdateRole } = require("../middlewares/validator");
+const { getAllUsers, userRol, deleteUsers, getUserByID } = require("../controllers/user.controller");
+const { validateMongoID, validateUpdateRole, validateUserId } = require("../middlewares/validator");
 
 const router = express.Router();
 
@@ -15,6 +15,7 @@ router.use(verifyAuth , verifySuperAdmin); //YO LE INDICO AL ENRUTADOR QUE POR D
 //RUTAS PRIVADAS PARA ADMINISTRACION DE USUARIOS
 router.get('/', getAllUsers);
 //GET USER BY ID 
+router.get('/:id', validateMongoID, validateUserId, getUserByID)
 router.patch('/:id/role', validateMongoID, validateUpdateRole, userRol);
 router.delete('/:id', validateMongoID, deleteUsers)
 

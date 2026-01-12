@@ -38,7 +38,28 @@ const getAllUsers = async (req, res) => {
 
 
 //GET USER BY ID
+const getUserByID = async(req, res, next) => {
+    try {
+        const {id} = req.params
+        const user = await User.findById(id).select('-password -verificationCode -codeExpiration')
 
+        return res.status(200).json({
+            ok: true,
+            message: 'Usuario encontrado con exito',
+            user:{
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        })
+
+
+
+    } catch (error) {
+        next(error)
+    }
+}
 
 const deleteUsers = async (req, res) => {
     try {
@@ -46,9 +67,7 @@ const deleteUsers = async (req, res) => {
         
 
         //PROTEGER AL SUPERADMIN DEL BORRADO!!!
-        if (condition) {
-            
-        }
+        
 
 
 
@@ -174,5 +193,6 @@ const userRol = async (req, res) => {
 module.exports = {
     getAllUsers,
     deleteUsers,
-    userRol
+    userRol,
+    getUserByID
 };
