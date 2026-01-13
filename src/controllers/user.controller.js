@@ -78,12 +78,14 @@ const deleteUsers = async (req, res) => {
 
 
         //SI EXISTE UN ARCHIVO GUARDADO COMO FOTO DE PERFIL BORRARLA
-
+        if(user.profilePic){
+            const path = require('path');
+            const previousPhoto = path.join(__dirname, '../../uploads/profiles',user.profilePic)
+            deleteOneFile(previousPhoto)
+        }
 
 
         //ELIMINO EL USUARIO
-
-
 
         await User.findByIdAndDelete(id);
 
