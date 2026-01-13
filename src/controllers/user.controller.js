@@ -87,7 +87,7 @@ const deleteUsers = async (req, res) => {
 
         //ELIMINO EL USUARIO
 
-        await User.findByIdAndDelete(id);
+        await User.deleteOne({_id: id});
 
 
         /* if (!idUser) {

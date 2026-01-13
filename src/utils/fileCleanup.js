@@ -26,7 +26,13 @@ const cleanUploadsFiles = (req) => {
     }
 }
 
+//OBTENER RUTA COMPLETA DEL ARCHIVO DESDE NOMBRE
+const getCompleteRoute = (filname, type) => {
+    return path.join(__dirname, `../../uploads/${type}`, filname)
+}
+
 module.exports = {
     deleteOneFile,
-    cleanUploadsFiles
+    cleanUploadsFiles,
+    getCompleteRoute
 }
