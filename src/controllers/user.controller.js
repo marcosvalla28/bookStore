@@ -4,7 +4,7 @@ const { deleteOneFile } = require('../utils/fileCleanup');
 
 
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
     try {
         
         const users = await User.find().select('-password');
@@ -28,11 +28,7 @@ const getAllUsers = async (req, res) => {
 
 
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-            ok: false,
-            msg: 'Hable con el administrador'
-        })
+        next(error)
     }
 }
 
@@ -61,7 +57,7 @@ const getUserByID = async(req, res, next) => {
     }
 }
 
-const deleteUsers = async (req, res) => {
+const deleteUsers = async (req, res, next) => {
     try {
         const {id} = req.params;
         const user = await User.findById(id).select('-password');
@@ -110,15 +106,11 @@ const deleteUsers = async (req, res) => {
 
 
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({
-            ok: false,
-            msg: 'Error al eliminar usuario, hable con el administrador'
-        })
+        next(error)
     }
 }
 
-const userRol = async (req, res) => {
+const userRol = async (req, res, next) => {
     try {
     const {id} = req.params;
     const {role} = req.body;
@@ -190,11 +182,7 @@ const userRol = async (req, res) => {
         }
     }) */
     } catch (error) {
-                console.error(error)
-        return res.status(500).json({
-            ok: false,
-            msg: 'Hubo un error, hable con su administrador ❌'
-        })
+        next(error)
     }
 
 }
