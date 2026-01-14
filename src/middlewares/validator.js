@@ -1,6 +1,6 @@
 const {body, param, validationResult} = require('express-validator');
 const User = require('../models/User');
-const { deleteOneFile } = require('../utils/fileCleanup');
+const { deleteOneFile, deleteFiles } = require('../utils/fileCleanup');
 const ROLE_SUPERADMIN = 'superadmin'
 
 //middleware para manejar los errores de validacion
@@ -26,6 +26,11 @@ const handleValidationErrorsWithFiles = (req, res, next) => {
         //SI HAY ERRORES Y SE SUBIO A ARCHIVOS NECESITO ELIMINARLOS
         if (req.file) {
             deleteOneFile(req.file.path)
+        }
+
+        //SI HAY ERRORES Y SE SUBIERON MULTIPLES ARCHIVOS (FOTOS DEL LIBRO), NECESITO ELIMINARLAS
+        if (req.files && Array.isArray(req.files)) {
+            deleteFiles(req.files.path);
         }
 
         return res.status(400).json({
@@ -179,6 +184,79 @@ const validateMongoID = [
 ]
 
 
+
+
+//VALIDACION PARA CREAR 
+const validateProduct = [
+
+    body('title')
+    .notEmpty().withMessage('El titulo es requerido')
+    .isLength({min:1}).withMessage('El titulo debe tener al menos 1 caracter'),
+
+    body('author')
+    .notEmpty().withMessage('El nombre del autor es requerido'),
+
+    body('price')
+    .notEmpty().withMessage('El precio es requerido')
+    .isFloat({min:0}).withMessage('E;precio debe ser un numero positivo'),
+
+    body('description')
+    .notEmpty().withMessage('La descripcion es requerida')
+    .isLength({min:10, max:500}).withMessage('La descripcion debe tener de 10 a 500 caracteres'),
+
+    body('genre')
+    .notEmpty().withMessage('El genero es requerido')
+    .isLength({min:1}).withMessage('El genero debe tener al menos 1 caracter'),
+
+
+    body('publisher')
+    .notEmpty().withMessage('La editorial es requerida')
+    .isLength({min:1}).withMessage('La editorial debe tener al menos 1 caracter'),
+
+    body('stock')
+    .isInt({min:0}).withMessage('El stock debe ser un número entero positivo'),
+
+
+    handleValidationErrorsWithFiles
+] 
+
+//VALIDACION PARA ACTUALIZAR PRODUCTO
+const validateUpdateProduct = [
+
+    body('title')
+    .optional() //ESTE CAMPO NO ES OBLIGATORIO
+    .isLength({min:1}).withMessage('El titulo debe tener al menos 1 caracter'),
+
+    body('author')
+    .optional(),
+
+    body('price')
+    .notEmpty().withMessage('El precio es requerido')
+    .isFloat({min:0}).withMessage('E;precio debe ser un numero positivo'),
+
+    body('description')
+    .optional()
+    .isLength({min:10, max:500}).withMessage('La descripcion debe tener de 10 a 500 caracteres'),
+
+    body('genre')
+    .optional()
+    .isLength({min:1}).withMessage('El genero debe tener al menos 1 caracter'),
+
+
+    body('publisher')
+    .optional()
+    .isLength({min:1}).withMessage('La editorial debe tener al menos 1 caracter'),
+
+    body('stock')
+    .optional()
+    .isInt({min:0}).withMessage('El stock debe ser un número entero positivo'),
+
+
+    handleValidationErrorsWithFiles
+] 
+
+
+
 module.exports = {
     validateRegister,
     validateLogin,
@@ -186,5 +264,6 @@ module.exports = {
     validateUpdateRole,
     validateSuperAdmin,
     validateVerifyEmail,
-    validateMongoID
+    validateMongoID,
+    validateProduct
 }

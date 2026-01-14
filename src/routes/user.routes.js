@@ -15,7 +15,7 @@ router.use(verifyAuth , verifySuperAdmin); //YO LE INDICO AL ENRUTADOR QUE POR D
 //RUTAS PRIVADAS PARA ADMINISTRACION DE USUARIOS
 router.get('/', getAllUsers);
 //GET USER BY ID 
-router.get('/:id', validateMongoID, validateUserId, getUserByID)
+router.get('/:id', validateUserId, getUserByID)
 router.patch('/:id/role', validateMongoID, validateUpdateRole, userRol);
 router.delete('/:id', validateMongoID, deleteUsers)
 
