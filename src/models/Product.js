@@ -25,6 +25,7 @@ const productSchema = new mongoose.Schema({
     genre:{
         type:String,
         required:true,
+        enum: ['fantasia', 'policial', 'manga', 'cientifico', 'novela', 'terror', 'otros'],
         trim: true
     },
     publisher: {
@@ -50,9 +51,9 @@ const productSchema = new mongoose.Schema({
     timestamps:true
 });
 
-//VALIDACION : QUE MINIMO ME PIDA 1 IMAGEN Y MAXIMO HASTA 3 IMAGENES
+/* //VALIDACION : QUE MINIMO ME PIDA 1 IMAGEN Y MAXIMO HASTA 3 IMAGENES
 productSchema.path('images').validate(function(value){
     return value.length >= 1 && value.length <= 3;
-}, 'Debe haber entre 1 y 3 imagenes')
+}, 'Debe haber entre 1 y 3 imagenes') */
 
 module.exports = mongoose.model('Product', productSchema);

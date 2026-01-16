@@ -58,7 +58,7 @@ const uploadProfile = multer({
 }).single('profilePic');
 
 //CONFIGURACION PARA PRODUCTOS, para subida de las imagenes de los libros (1-3 maximo | )
-const uploadProduct = multer({
+const uploadProductImages = multer({
     storage: productsStorage,
     limits: {fileSize: 2 * 1024 * 1024}, //2MB
     fileFilter: fileFilter
@@ -69,5 +69,5 @@ const uploadProduct = multer({
 //exportar la función
 module.exports = {
     uploadProfile,
-    uploadProduct
+    uploadProductImages
 }

@@ -1,6 +1,6 @@
 const {body, param, validationResult} = require('express-validator');
 const User = require('../models/User');
-const { deleteOneFile, deleteFiles } = require('../utils/fileCleanup');
+const { deleteOneFile, deleteFiles, cleanUploadsFiles } = require('../utils/fileCleanup');
 const ROLE_SUPERADMIN = 'superadmin'
 
 //middleware para manejar los errores de validacion
@@ -29,9 +29,12 @@ const handleValidationErrorsWithFiles = (req, res, next) => {
         }
 
         //SI HAY ERRORES Y SE SUBIERON MULTIPLES ARCHIVOS (FOTOS DEL LIBRO), NECESITO ELIMINARLAS
-        if (req.files && Array.isArray(req.files)) {
+        /* if (req.files && Array.isArray(req.files)) {
             deleteFiles(req.files.path);
-        }
+        } */
+       if (req.files && Array.isArray(req.files)) {
+        cleanUploadsFiles(req);
+    }
 
         return res.status(400).json({
             ok: false,
@@ -202,7 +205,7 @@ const validateProduct = [
 
     body('description')
     .notEmpty().withMessage('La descripcion es requerida')
-    .isLength({min:10, max:500}).withMessage('La descripcion debe tener de 10 a 500 caracteres'),
+    .isLength({min:10, max:1000}).withMessage('La descripcion debe tener de 10 a 1000 caracteres'),
 
     body('genre')
     .notEmpty().withMessage('El genero es requerido')
@@ -236,7 +239,7 @@ const validateUpdateProduct = [
 
     body('description')
     .optional()
-    .isLength({min:10, max:500}).withMessage('La descripcion debe tener de 10 a 500 caracteres'),
+    .isLength({min:10, max:1000}).withMessage('La descripcion debe tener de 10 a 1000 caracteres'),
 
     body('genre')
     .optional()
@@ -265,5 +268,6 @@ module.exports = {
     validateSuperAdmin,
     validateVerifyEmail,
     validateMongoID,
-    validateProduct
+    validateProduct,
+    validateUpdateProduct
 }

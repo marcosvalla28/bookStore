@@ -1,4 +1,8 @@
 const express = require('express');
+const {up, uploadProductImages} = require('../config/multer')
+const { createProduct, updateProduct } = require('../controllers/product.controller');
+const { validateProduct, validateMongoID, validateUpdateProduct } = require('../middlewares/validator');
+const { verifyAuth, verifyAdmin } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -13,8 +17,21 @@ const router = express.Router();
 
 
 //RUTAS PRIVADAS (SOLO ADMIN Y SUPERADMIN)
-//router.post('/',)
-//router.put('/:id',)
+router.post('/', 
+    verifyAuth,
+    verifyAdmin,
+    uploadProductImages, 
+    validateProduct, 
+    createProduct)
+router.put('/:id',
+    verifyAuth,
+    verifyAdmin,
+    validateMongoID,
+    uploadProductImages,
+    validateUpdateProduct,
+    updateProduct
+
+)
 //router.delete('/:id',)
 
 
