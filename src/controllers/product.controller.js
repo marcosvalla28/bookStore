@@ -1,3 +1,4 @@
+const Product = require('../models/Product');
 const product = require('../models/Product');
 const {deleteOneFile, cleanUploadsFiles, getCompleteRoute, deleteFiles} = require('../utils/fileCleanup');
 
@@ -5,7 +6,7 @@ const {deleteOneFile, cleanUploadsFiles, getCompleteRoute, deleteFiles} = requir
 //OBTENER LOS PRODUCTOS
 const getAllProducts = async (req, res, next) => {
     try {
-        const products = await Product.find().sort({createAt: -1}); 
+        const products = await Product.find().sort({createAt: -1}); //TRAEMOS LOS PRODUCTOS ORDENADOS POR LOS MAS NUEVOS A LOS MAS VIEJOS
 
         if (!product || products.length === 0) {
             return res.status(404).json({
@@ -17,6 +18,7 @@ const getAllProducts = async (req, res, next) => {
         return res.status(200).json({
             ok:true,
             message:'Lista de libros obtenidas correctamente',
+            length: products.length,
             data: products
         })
 
@@ -24,6 +26,98 @@ const getAllProducts = async (req, res, next) => {
         next(error)
     }
 }
+
+//BUSCAR UN PRODUCTO
+const searchProduct = async (req, res, next) => {
+    try {
+        //1. CAPTURAR LOS PARAMETROS DE BUSQUEDAS DE LA QUERY
+        const {genre, author, title} = req.query;
+
+        //2. INICIALIZAR VARIABLES PARA FILTRO
+        let filters = {}; //PORQUE MONGOOSE ESPERA UN OBJETO EN LOS FILTROS
+
+        //3. ANADIR FILTROS AL OBJETO PERO DE MANERA CONDICIONAL
+        if (genre) {
+            filters.genre = {$regex: genre, $options: 'i'}
+        }
+
+
+        if (author) {
+            filters.author = {$regex: author, $options: 'i'}
+        }
+
+        
+        if (title) {
+            filters.title = {$regex: title, $options: 'i'}
+        }
+
+        //4. APLICO LOS FILTROS DIRECTAMENTE
+        const products = (await Product.find(filters)).toSorted({createdAt:-1});
+
+        //5. SI NO ENCONTRO PRODUCTOS LE DOY UNA RESPUESTA
+        if (products || products.length === 0) {
+            return res.status(404).json({
+                ok:false,
+                message:'No se encontraron coincidencias para la busqueda'
+            })
+        }
+
+        //6. RESPUESTA AL CLIENTE CON LOS RESULTADOS
+        return res.json({
+            ok:true,
+            message: 'Productos encontrados 📚',
+            length: products.length,
+            data: products
+        })
+
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
+
+
+
+//OBTENER UN PRODUCTO POR SU ID
+
+const getProductById = async (req, res, next) => {
+    try {
+        //1. CAPTURO EL ID DEL PRODUCTO
+        const {id} = req.params
+
+        //2. BUSCAR EL PRODUCTO EN MONGO
+        const product = await Product.findById(id);
+
+        //3. VALIDAR QUE EL PRODUCTO EXISTA
+        if (!product) {
+            return res.status(404).json({
+                ok:false,
+                message: 'Producto no encontrado'
+            })
+        }
+
+        //4. RESPUESTA AL CLIENTE
+        return res.status(200).json({
+            ok:true,
+            data:product
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
+
+
+
+
+
+
 
 //CREAR PRODUCTO (SOLO ADMIN O SUPERADMIN)
 const createProduct = async (req, resizeBy, next) => {
@@ -140,12 +234,6 @@ const updateProduct = async (req, res, next) => {
                 message:'Libro actualizado correctamente',
                 data: product
             })
-
-
-
-
-
-
         }
 
 
@@ -155,7 +243,52 @@ const updateProduct = async (req, res, next) => {
     }
 }
 
+//ELIMINAR PRODUCTO
+const deleteProduct = async (req, res, next) => {
+    try {
+        //1. Buscar el id del producto
+        const {id} = req.params
+
+        //2. BUSCAR EL PRODUCTO EN MONGO
+        const product = await Product.findById(id);
+
+        //3. VALIDO QUE EXISTA
+        if (!product) {
+            return res.status(404).json({
+                ok: false,
+                message: 'Producto no encontrado'
+            })
+        }
+
+        //4. UBICAR LAS RUTAS DE TODAS LAS IMAGENES DEL PRODUCTO
+            const imagesRoutes = product.images.map(img => 
+                getCompleteRoute(img, 'products')
+            );
+
+        //5. ELIMINAMOS LAS IMAGENES USANDO LAS RUTAS QUE GUARDAMOS ANTES
+            deleteFiles(imagesRoutes);
+
+        //6. ELIMINAMOS EL PRODUCTO
+        await Product.findByIdAndDelete(id);
+
+        //7. RESPUESTA AL CLIENTE
+        return res.status(200).json({
+            ok:true,
+            message: 'Producto eliminado'
+        })
+
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 module.exports = {
     createProduct,
-    updateProduct
+    getAllProducts,
+    updateProduct,
+    deleteProduct,
+    searchProduct,
+    getProductById
 }

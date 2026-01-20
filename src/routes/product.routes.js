@@ -1,6 +1,6 @@
 const express = require('express');
 const {up, uploadProductImages} = require('../config/multer')
-const { createProduct, updateProduct } = require('../controllers/product.controller');
+const { createProduct, updateProduct, getAllProducts, deleteProduct, searchProduct, getProductById } = require('../controllers/product.controller');
 const { validateProduct, validateMongoID, validateUpdateProduct } = require('../middlewares/validator');
 const { verifyAuth, verifyAdmin } = require('../middlewares/auth');
 
@@ -11,9 +11,9 @@ const router = express.Router();
 //ENDPOINTS QUE ME LISTA TODOS LOS PRODUCTOS
 
 //RUTAS PUBLICAS PARA TODOS LOS USUARIOS
-/* router.get('/') */
-//router.get('/search', )
-//router.get('/:id',)
+router.get('/', getAllProducts)
+router.get('/search', searchProduct)
+router.get('/:id', getProductById)
 
 
 //RUTAS PRIVADAS (SOLO ADMIN Y SUPERADMIN)
@@ -23,6 +23,7 @@ router.post('/',
     uploadProductImages, 
     validateProduct, 
     createProduct)
+
 router.put('/:id',
     verifyAuth,
     verifyAdmin,
@@ -32,7 +33,13 @@ router.put('/:id',
     updateProduct
 
 )
-//router.delete('/:id',)
+router.delete(
+    '/:id',
+    verifyAuth,
+    verifyAdmin,
+    validateMongoID,
+    deleteProduct
+)
 
 
 
