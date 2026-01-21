@@ -4,6 +4,7 @@ const { register, login, getAllUsers, deleteUsers, userRol, verifyEmail, logout,
 const { validateRegister, validateLogin, validateUserId, validateUpdateRole, validateSuperAdmin, validateVerifyEmail } = require("../middlewares/validator");
 const { uploadProfile } = require("../config/multer");
 const { verifyAuth } = require("../middlewares/auth");
+const { authLimiter } = require("../middlewares/rateLimiter");
 
 const router = express.Router();
 
@@ -11,9 +12,9 @@ const router = express.Router();
 //endpoints
 
 //ENDPOINTS PUBLICOS
-router.post("/register", uploadProfile , validateRegister, register);
-router.post("/verify-email", validateVerifyEmail , verifyEmail)
-router.post("/login", validateLogin, login);
+router.post("/register", authLimiter, uploadProfile , validateRegister, register);
+router.post("/verify-email", authLimiter, validateVerifyEmail , verifyEmail)
+router.post("/login", authLimiter, validateLogin, login);
 
 
 //ENDPOINTS PRIVADOS
