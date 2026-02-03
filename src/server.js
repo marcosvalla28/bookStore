@@ -3,6 +3,7 @@ require("dotenv").config();
 const morgan = require("morgan");
 const path = require('path')
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 //LOS ARCHIVOS DE LOS ENRUTADORES
 //IMPORTAR LOS ENRUTADORES
@@ -28,6 +29,10 @@ createSuperAdmin();
 
 
 //MIDDLEWARES
+app.use(cors({
+    origin: "http://localhost:5173", // URL de tu app de React con Vite o sino para acceso universal usar "*" y para varios origenes usar ["http://localhost:5173", "http://localhost:3000"]
+    credentials: true // Permitir el envío de cookies
+}));
 app.use(morgan("dev"));
 app.use(globalLimiter);
 app.use(express.json());
